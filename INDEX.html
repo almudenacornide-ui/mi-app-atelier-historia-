@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alter Historia — Vive el Pasado</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-dark: #8B6914;
+  --ink: #1A1208;
+  --parchment: #F5EDD6;
+  --parchment-dark: #E8D9B5;
+  --parchment-deep: #D4C090;
+  --red: #8B1A1A;
+  --red-light: #C0392B;
+  --teal: #1A5C6B;
+  --teal-light: #2980B9;
+  --shadow: rgba(26,18,8,0.4);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Crimson Pro', Georgia, serif;
+  background: #0D0A04;
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ---- BACKGROUND ---- */
+.bg-texture {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(139,26,26,0.08) 0%, transparent 50%),
+    #0D0A04;
+}
+.bg-texture::before {
+  content:'';
+  position:absolute; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ---- SCREENS ---- */
+.screen {
+  position: relative; z-index: 1;
+  display: none;
+  min-height: 100vh;
+  padding: 20px;
+}
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+
+/* ---- SCROLL CONTAINER ---- */
+.scroll-container {
+  background: var(--parchment);
+  border: 2px solid var(--gold-dark);
+  border-radius: 4px;
+  box-shadow: 0 0 60px rgba(201,168,76,0.15), inset 0 0 40px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 700px;
+  position: relative;
+  overflow: hidden;
+}
+.scroll-container::before, .scroll-container::after {
+  content:'';
+  display: block;
+  height: 18px;
+  background: linear-gradient(to right, var(--gold-dark), var(--gold), var(--gold-dark));
+  opacity: 0.7;
+}
+
+.scroll-inner { padding: 30px 35px; }
+
+/* ---- TYPOGRAPHY ---- */
+h1.app-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.2rem, 8vw, 4rem);
+  font-weight: 900;
+  color: var(--gold);
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 20px rgba(201,168,76,0.4);
+  line-height: 1.1;
+}
+h2.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: 0.08em;
+}
+.subtitle {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem;
+  color: #5A4A2A;
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.divider {
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold-dark), transparent);
+  margin: 18px auto;
+  border: none;
+}
+
+/* ---- BUTTONS ---- */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 13px 20px;
+  margin: 8px 0;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 1.5px solid var(--gold-dark);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: var(--ink);
+}
+.btn-primary:hover { background: linear-gradient(135deg, var(--gold), var(--gold-light)); transform: translateY(-1px); box-shadow: 0 4px 15px rgba(201,168,76,0.3); }
+.btn-secondary {
+  background: transparent;
+  color: var(--gold-dark);
+}
+.btn-secondary:hover { background: rgba(201,168,76,0.1); }
+.btn-danger {
+  background: linear-gradient(135deg, var(--red), #C0392B);
+  color: var(--parchment);
+  border-color: var(--red);
+}
+.btn-danger:hover { background: linear-gradient(135deg, #C0392B, #E74C3C); transform: translateY(-1px); }
+.btn-small {
+  display: inline-block;
+  width: auto;
+  padding: 7px 16px;
+  font-size: 0.8rem;
+  margin: 4px;
+}
+
+/* ---- CHARACTER CARDS ---- */
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+.char-card {
+  background: linear-gradient(160deg, #FBF3DC, var(--parchment-dark));
+  border: 1.5px solid var(--parchment-deep);
+  border-radius: 4px;
+  padding: 16px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.char-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(201,168,76,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.char-card:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 8px 25px var(--shadow); }
+.char-card:hover::before { opacity: 1; }
+.char-avatar { font-size: 3rem; text-align: center; display: block; margin-bottom: 8px; }
+.char-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.char-era {
+  font-size: 0.82rem;
+  color: #6B5530;
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+.char-hook {
+  font-size: 0.8rem;
+  color: var(--red);
+  text-align: center;
+  font-style: italic;
+  line-height: 1.4;
+  font-weight: 600;
+}
+.difficulty-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  margin: 6px auto;
+  display: block;
+  text-align: center;
+  width: fit-content;
+}
+.diff-easy { background: #D4EDDA; color: #155724; }
+.diff-medium { background: #FFF3CD; color: #856404; }
+.diff-hard { background: #F8D7DA; color: #721C24; }
+
+/* ---- NARRATIVE ---- */
+.act-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--gold-dark);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.narrative-text {
+  font-size: 1.1rem;
+  line-height: 1.75;
+  color: #2A1F0A;
+  margin-bottom: 16px;
+}
+.narrative-text p { margin-bottom: 12px; }
+
+/* ---- DECISIONS ---- */
+.decision-prompt {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  margin: 20px 0 14px;
+  padding: 12px;
+  background: rgba(201,168,76,0.1);
+  border-left: 3px solid var(--gold);
+  border-radius: 2px;
+}
+.choice-btn {
+  background: var(--parchment-dark);
+  border: 1.5px solid var(--parchment-deep);
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin: 8px 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.choice-btn:hover { border-color: var(--gold); background: #EFE4C0; transform: translateX(4px); }
+.choice-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  display: block;
+  margin-bottom: 3px;
+  letter-spacing: 0.1em;
+}
+
+/* ---- CONSEQUENCE ---- */
+.consequence-box {
+  background: linear-gradient(135deg, #FDF6E3, #F0E4C0);
+  border: 1.5px solid var(--gold-dark);
+  border-radius: 4px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.consequence-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  margin-bottom: 8px;
+  letter-spacing: 0.08em;
+}
+.consequence-text { font-size: 1rem; line-height: 1.65; color: #2A1F0A; }
+
+/* ---- DATO HISTÓRICO ---- */
+.dato-box {
+  background: linear-gradient(135deg, #EEF7ED, #D8EDD6);
+  border: 1.5px solid #3A7D44;
+  border-radius: 4px;
+  padding: 16px;
+  margin: 16px 0;
+}
+.dato-title { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: #2D6A33; margin-bottom: 6px; }
+.dato-text { font-size: 0.95rem; line-height: 1.6; color: #1A3D1F; font-style: italic; }
+
+/* ---- INDICATORS ---- */
+.indicators-bar {
+  background: rgba(201,168,76,0.08);
+  border: 1px solid var(--parchment-deep);
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.indicators-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--gold-dark);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.indicators-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.indicator-item { }
+.indicator-label { font-size: 0.78rem; color: #6B5530; margin-bottom: 3px; }
+.indicator-track {
+  height: 8px;
+  background: var(--parchment-deep);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.indicator-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+.fill-poder { background: linear-gradient(to right, #8B1A1A, #C0392B); }
+.fill-recursos { background: linear-gradient(to right, var(--gold-dark), var(--gold)); }
+.fill-popularidad { background: linear-gradient(to right, #1A5C6B, #2980B9); }
+.fill-reputacion { background: linear-gradient(to right, #4A1A8B, #8E44AD); }
+.indicator-val { font-size: 0.75rem; color: #5A4A2A; text-align: right; }
+
+/* ---- FINAL SCREEN ---- */
+.final-box {
+  background: linear-gradient(135deg, #FDF6E3, #EFE4C0);
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+  padding: 20px;
+  margin: 14px 0;
+}
+.final-yours { border-color: var(--red); background: linear-gradient(135deg, #FDF0ED, #F5D6CE); }
+.final-real { border-color: #3A7D44; background: linear-gradient(135deg, #EEF7ED, #D8EDD6); }
+.final-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin-bottom: 8px;
+}
+.final-yours .final-label { color: var(--red); }
+.final-real .final-label { color: #2D6A33; }
+.final-text { font-size: 1rem; line-height: 1.65; color: #2A1F0A; }
+
+.learnt-list {
+  list-style: none;
+  margin: 10px 0;
+}
+.learnt-list li {
+  padding: 6px 0 6px 24px;
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #2A1F0A;
+  border-bottom: 0.5px solid var(--parchment-deep);
+}
+.learnt-list li::before {
+  content: '📖';
+  position: absolute; left: 0; top: 6px;
+  font-size: 0.85rem;
+}
+
+/* ---- GLOSARIO ---- */
+.glos-grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+.glos-item {
+  border-bottom: 0.5px solid var(--parchment-deep);
+  padding: 10px 6px;
+}
+.glos-term { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700; color: var(--gold-dark); }
+.glos-def { font-size: 0.92rem; color: #3A2E18; margin-top: 3px; line-height: 1.5; }
+
+/* ---- FILTER BAR ---- */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  justify-content: center;
+}
+.filter-btn {
+  padding: 5px 13px;
+  font-size: 0.78rem;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  border: 1px solid var(--parchment-deep);
+  border-radius: 20px;
+  background: var(--parchment);
+  color: var(--gold-dark);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-btn.active, .filter-btn:hover {
+  background: var(--gold-dark);
+  color: var(--parchment);
+  border-color: var(--gold-dark);
+}
+
+/* ---- PROGRESS ---- */
+.progress-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+.dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--parchment-deep);
+  transition: background 0.3s;
+}
+.dot.done { background: var(--gold); }
+.dot.current { background: var(--red); }
+
+/* ---- TOAST / EFFECT ---- */
+.delta-toast {
+  position: fixed;
+  top: 20px; right: 20px;
+  background: var(--ink);
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 4px;
+  border: 1px solid var(--gold-dark);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s;
+  pointer-events: none;
+}
+.delta-toast.show { opacity: 1; transform: translateY(0); }
+
+/* ---- GLOSSARY TOOLTIP ---- */
+.glos-link {
+  border-bottom: 1px dashed var(--gold-dark);
+  cursor: pointer;
+  color: var(--gold-dark);
+}
+
+/* ---- NAV BAR ---- */
+.nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0 14px;
+  width: 100%;
+  max-width: 700px;
+}
+.nav-logo {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+}
+.nav-btns { display: flex; gap: 8px; }
+.nav-btn {
+  background: rgba(201,168,76,0.1);
+  border: 1px solid var(--gold-dark);
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.15s;
+}
+.nav-btn:hover { background: var(--gold-dark); color: var(--parchment); }
+
+/* ---- MODAL ---- */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--parchment);
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.modal-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+/* ---- ANIMATIONS ---- */
+@keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.4s ease forwards; }
+
+@keyframes shimmer {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.char-avatar { animation: shimmer 3s ease-in-out infinite; }
+
+/* mobile */
+@media (max-width: 500px) {
+  .scroll-inner { padding: 20px 18px; }
+  .char-grid { grid-template-columns: 1fr 1fr; }
+  .indicators-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-texture"></div>
+
+<!-- TOAST -->
+<div class="delta-toast" id="toast"></div>
+
+<!-- GLOSARIO MODAL -->
+<div class="modal-overlay" id="glosModal">
+  <div class="modal-box">
+    <div class="modal-title" id="glosModalTitle">Término</div>
+    <div id="glosModalDef" style="font-size:1rem;line-height:1.65;color:#2A1F0A;"></div>
+    <button class="btn btn-secondary btn-small" style="margin-top:16px;" onclick="closeGlos()">Cerrar</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 1: INICIO ===== -->
+<div class="screen active" id="screen-inicio">
+  <div class="nav-bar">
+    <span class="nav-logo">⚔️ ALTER HISTORIA</span>
+    <div class="nav-btns">
+      <button class="nav-btn" onclick="showGlosario()">📚 Glosario</button>
+    </div>
+  </div>
+  <div class="scroll-container fade-in" style="max-width:600px;">
+    <div class="scroll-inner" style="text-align:center; padding: 40px 35px;">
+      <div style="font-size:3.5rem; margin-bottom: 12px;">⚜️</div>
+      <h1 class="app-title">ALTER HISTORIA</h1>
+      <div style="height:12px;"></div>
+      <p class="subtitle">"Aquí no solo leerás la historia: la vivirás.<br>Elige un personaje histórico real, toma sus decisiones<br>y descubre cómo cada elección cambia tu destino."</p>
+      <hr class="divider">
+      <button class="btn btn-primary" onclick="showSeleccion()">🎭 Comenzar nueva partida</button>
+      <button class="btn btn-secondary" onclick="showSeleccion()">👁️ Ver personajes disponibles</button>
+      <button class="btn btn-secondary" onclick="showGlosario()">📚 Glosario histórico</button>
+      <hr class="divider">
+      <p style="font-size:0.8rem;color:#8B7A55;font-style:italic;">Proyecto PAI · Carlota Sáez-Torres & Almudena Cornide · Orvalle 25/26</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: SELECCIÓN ===== -->
+<div class="screen" id="screen-seleccion">
+  <div class="nav-bar">
+    <span class="nav-logo">⚔️ ALTER HISTORIA</span>
+    <div class="nav-btns">
+      <button class="nav-btn" onclick="showScreen('screen-inicio')">🏠 Inicio</button>
+      <button class="nav-btn" onclick="showGlosario()">📚 Glosario</button>
+    </div>
+  </div>
+  <div class="scroll-container fade-in">
+    <div class="scroll-inner">
+      <h2 class="section-title">⚜️ ELIGE TU PERSONAJE</h2>
+      <p class="subtitle">¿Quién quieres ser hoy?</p>
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" onclick="filterChars('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="filterChars('facil',this)">🟢 Fácil</button>
+        <button class="filter-btn" onclick="filterChars('medio',this)">🟡 Medio</button>
+        <button class="filter-btn" onclick="filterChars('dificil',this)">🔴 Difícil</button>
+      </div>
+      <div class="char-grid" id="charGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: JUEGO ===== -->
+<div class="screen" id="screen-juego">
+  <div class="nav-bar">
+    <span class="nav-logo">⚔️ ALTER HISTORIA</span>
+    <div class="nav-btns">
+      <button class="nav-btn" onclick="if(confirm('¿Abandonar la partida?')) showSeleccion()">🏠 Salir</button>
+      <button class="nav-btn" onclick="showGlosario()">📚 Glosario</button>
+    </div>
+  </div>
+  <div class="scroll-container fade-in" id="gameScroll">
+    <div class="scroll-inner" id="gameContent"></div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 4: GLOSARIO ===== -->
+<div class="screen" id="screen-glosario">
+  <div class="nav-bar">
+    <span class="nav-logo">⚔️ ALTER HISTORIA</span>
+    <div class="nav-btns">
+      <button class="nav-btn" onclick="history.back(); showScreen(prevScreen)">← Volver</button>
+    </div>
+  </div>
+  <div class="scroll-container fade-in">
+    <div class="scroll-inner">
+      <h2 class="section-title">📚 GLOSARIO HISTÓRICO</h2>
+      <p class="subtitle">Toca cualquier término para saber más</p>
+      <hr class="divider">
+      <div class="glos-grid" id="glosGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  DATA
+// ============================================================
+
+const GLOSARIO = {
+  "Absolutismo": "Sistema de gobierno en el que el rey tiene poder total sin límites. Nadie puede contradecirle legalmente.",
+  "Burguesía": "Clase social formada por comerciantes, artesanos y profesionales que fue ganando importancia en los S.XVII–XVIII. No eran nobles, pero tenían dinero.",
+  "Clero": "Conjunto de sacerdotes, monjes y obispos de la Iglesia. En los S.XVII–XVIII tenían enorme poder político y social.",
+  "Conquista": "Proceso por el que los españoles tomaron control de territorios de América en los S.XV–XVII, sometiendo a los pueblos indígenas.",
+  "Corte": "El conjunto de personas que rodeaban al rey: nobles, consejeros, damas de honor. Vivían cerca del palacio.",
+  "Estamento": "Cada uno de los grupos sociales fijos de la Edad Moderna: nobleza, clero y pueblo llano. Normalmente no se podía cambiar de estamento.",
+  "Guillotina": "Máquina usada durante la Revolución Francesa para ejecutar personas mediante decapitación. Se consideraba más 'igualitaria' porque se usaba con todos, incluso nobles.",
+  "Herejía": "En la época, creer o enseñar algo contrario a la doctrina oficial de la Iglesia Católica. Podía castigarse con la muerte.",
+  "Heliocentrismo": "Teoría científica que afirma que la Tierra gira alrededor del Sol (y no al revés). La Iglesia la consideró herejía durante mucho tiempo.",
+  "Ilustración": "Movimiento intelectual del S.XVIII que defendía la razón, la ciencia y la libertad frente a la superstición y el poder absoluto de reyes e iglesias.",
+  "Inquisición": "Tribunal de la Iglesia Católica que investigaba y juzgaba casos de herejía. Podía encarcelar, torturar o ejecutar. Activa especialmente en España entre S.XV–XIX.",
+  "Mecenazgo": "Sistema por el que un noble o rico financiaba el trabajo de un artista, científico o escritor a cambio de dedicatorias y prestigio.",
+  "Nobleza": "Clase social privilegiada que poseía tierras y títulos (duque, conde, marqués). No pagaban impuestos y tenían derechos especiales.",
+  "Revolución Francesa": "Período (1789–1799) en que el pueblo francés derrocó la monarquía, ejecutó al rey y la reina, y estableció nuevos principios: libertad, igualdad, fraternidad.",
+  "Siervo": "En Rusia y Europa del Este, campesino prácticamente esclavo que pertenecía a la tierra de un noble. No podía moverse ni casarse sin permiso del señor.",
+  "Telescopio": "Instrumento óptico que permite ver objetos lejanos. Galileo mejoró su diseño y lo usó para observar el cielo, revolucionando la astronomía.",
+  "Traición": "Acto de actuar contra la persona o causa a la que debes lealtad (el rey, tu patria, tu aliado). En la época, podía castigarse con la muerte.",
+  "Viruela": "Enfermedad infecciosa gravísima, hoy erradicada. Los conquistadores la llevaron a América sin quererlo, matando a millones de indígenas que no tenían defensas contra ella.",
+  "Versalles": "Enorme palacio construido por Luis XIV de Francia. Símbolo del poder absoluto. La nobleza vivía allí para estar bajo control del rey.",
+  "Quinto Real": "El 20% de todo el oro y plata obtenidos en América que los conquistadores debían entregar a la Corona española.",
+};
+
+const CHARACTERS = [
+  {
+    id: 'napoleon',
+    name: 'Napoleón Bonaparte',
+    era: 'Francia / Europa, 1769–1821',
+    difficulty: 'dificil',
+    diffLabel: 'Difícil',
+    avatar: '👑',
+    hook: '"De soldado corso a emperador de Europa. Pero el poder tiene un precio."',
+    story: [
+      {
+        act: 'Acto I — Origen',
+        text: `<p>Córcega, 1769. Acabas de nacer en una isla que hasta ayer era genovesa y hoy es francesa. Tu nombre es Napoleone di Buonaparte.</p><p>Tu familia es noble, pero pobre. Tu padre consigue enviarte a una academia militar en Francia. Tienes nueve años. Nadie habla tu idioma. Te ríen el acento. Pero tú estudias más que todos.</p><p>Las matemáticas, la artillería, los mapas: los devoras. Llegas a la academia militar de París. El año es 1784. En las calles de Francia, algo empieza a hervir.</p>`,
+        dato: null
+      },
+      {
+        act: 'Acto II — El Conflicto',
+        text: `<p>1789. La <span class="glos-link" onclick="openGlos('Revolución Francesa')">Revolución Francesa</span> estalla. El rey Luis XVI ha perdido el control. La <span class="glos-link" onclick="openGlos('Burguesía')">burguesía</span> y el pueblo se han levantado.</p><p>Para la mayoría de los oficiales del ejército, esto es una crisis. Para ti, es una oportunidad. La revolución dice que el mérito importa más que el linaje. Y tú tienes mucho mérito.</p><p>Te han ascendido a general a los 24 años. Pero ahora debes elegir.</p>`,
+        decision: {
+          prompt: '⚔️ 1789 — ¿Qué posición tomas frente a la Revolución?',
+          choices: [
+            { label: 'A — Apoyar la Revolución', text: 'Declaras públicamente tu apoyo a los ideales revolucionarios: libertad, igualdad, fin del absolutismo.' },
+            { label: 'B — Mantenerte neutral', text: 'Eres militar. Tu lealtad es a Francia, no a una facción. Esperas a ver qué pasa.' },
+          ],
+          consequences: [
+            {
+              text: 'Apoyas la Revolución y tu carrera despega. Eres uno de los pocos generales que no huye ni se hace ejecutar. El nuevo gobierno te necesita. Tu poder crece.',
+              deltas: { poder: +20, reputacion: +10, popularidad: +15, recursos: +5 },
+              dato: 'La Revolución Francesa abrió el ejército al talento. Napoleón fue el mayor beneficiario: en 1793 ya era general de brigada, algo impensable bajo el Ancien Régime.'
+            },
+            {
+              text: 'Tu neutralidad te salva la cabeza, pero pierdes oportunidades. Otros generales más comprometidos ascienden más rápido que tú. Tendrás que trabajar el doble.',
+              deltas: { poder: +5, reputacion: 0, popularidad: -5, recursos: 0 },
+              dato: 'La Revolución Francesa ejecutó a miles de oficiales realistas. Muchos que se mantuvieron neutrales sobrevivieron, pero perdieron décadas de carrera.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto III — El Ascenso',
+        text: `<p>1804. Eres el hombre más poderoso de Francia. Has ganado campañas en Italia y Egipto. Has aplastado a coaliciones de enemigos. El pueblo te adora.</p><p>Pero el poder que tienes... ¿es suficiente? La <span class="glos-link" onclick="openGlos('Nobleza')">nobleza</span> europea te mira con desprecio: eres un advenedizo corso. Un militar sin sangre real.</p><p>Tienes una sola oportunidad de cambiar eso para siempre.</p>`,
+        decision: {
+          prompt: '👑 1804 — ¿Cómo consolidas tu poder?',
+          choices: [
+            { label: 'A — Autoproclamarte Emperador', text: 'Organizas una ceremonia en Notre Dame. Coges la corona de manos del Papa y te la pones tú mismo.' },
+            { label: 'B — Quedarte como Cónsul vitalicio', text: 'El poder real es tuyo de todas formas. No necesitas un título de Emperador para gobernar.' },
+          ],
+          consequences: [
+            {
+              text: 'Te conviertes en Napoleón I, Emperador de los Franceses. El gesto de coronarte tú mismo envía un mensaje al mundo: tu poder no viene de Dios ni de la sangre. Viene de ti. Europa tiembla.',
+              deltas: { poder: +25, reputacion: +15, popularidad: +5, recursos: +10 },
+              dato: 'El 2 de diciembre de 1804, Napoleón se coronó a sí mismo en presencia del Papa Pío VII. El gesto fue deliberado: ningún poder —ni divino ni eclesiástico— era superior al suyo.'
+            },
+            {
+              text: 'Mantienes el título de Cónsul. Tu poder es enorme, pero los reyes europeos te siguen viendo como un usurpador sin corona. Las alianzas se complican. Algunas oportunidades diplomáticas se cierran.',
+              deltas: { poder: +10, reputacion: 0, popularidad: +10, recursos: +5 },
+              dato: 'El Consulado napoleónico (1799–1804) fue uno de los gobiernos más eficientes de la historia francesa, con reformas como el Código Civil que aún hoy existen.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto IV — El Clímax',
+        text: `<p>1812. Dominas casi toda Europa. Solo queda un rival: Rusia. El zar Alejandro I ha roto el bloqueo económico que estabas usando para asfixiar a Inglaterra.</p><p>Tus generales te advierten: Rusia es enorme. El invierno ruso mata más que los cañones. Pero tu orgullo y tu estrategia dicen que tienes que actuar.</p><p>600.000 soldados esperan tu orden.</p>`,
+        decision: {
+          prompt: '❄️ 1812 — ¿Invades Rusia?',
+          choices: [
+            { label: 'A — Invadir Rusia ahora', text: 'Con 600.000 soldados, cruzas el río Niemen en junio. Moscú debe caer antes del invierno.' },
+            { label: 'B — Negociar y esperar', text: 'Mandas emisarios al zar. El tiempo juega a tu favor en Europa. La guerra puede esperar.' },
+          ],
+          consequences: [
+            {
+              text: 'Llegas a Moscú… pero la encuentras vacía y en llamas. Los rusos la han quemado ellos mismos. El invierno llega. Tus soldados mueren de frío, hambre y enfermedades por miles. La retirada es un desastre catastrófico.',
+              deltas: { poder: -35, popularidad: -25, reputacion: -15, recursos: -30 },
+              dato: 'En la campaña de Rusia de 1812, más de 400.000 soldados franceses murieron. La mayoría no cayeron en batalla, sino por el frío, el hambre y las enfermedades durante la retirada.'
+            },
+            {
+              text: 'Tus emisarios fracasan: el zar no negocia. Pero al esperar, has conservado tu ejército. Buscas una alianza con Austria y presionas a Rusia desde el oeste. El resultado es incierto, pero tus tropas siguen vivas.',
+              deltas: { poder: -10, popularidad: +10, reputacion: +5, recursos: -5 },
+              dato: 'Varios generales de Napoleón le advirtieron contra la invasión de Rusia. El propio Talleyrand, su ministro, le dijo que era "el principio del fin".'
+            }
+          ]
+        }
+      }
+    ],
+    endings: {
+      good: {
+        title: '🏆 Tu final — Legado del Reformador',
+        text: 'Tus decisiones te han permitido consolidar el poder sin la catástrofe rusa. Negocias la paz de Viena en mejores condiciones. Europa adopta el Código Napoleónico. Tu legado es el de un modernizador que cambió el mundo sin destruirse a sí mismo.'
+      },
+      bad: {
+        title: '⚡ Tu final — La Caída del Águila',
+        text: 'La campaña de Rusia ha destrozado tu ejército. Las potencias europeas se unen contra ti. Waterloo (1815) sella tu destino. Serás exiliado a Santa Elena, una isla en medio del Atlántico, donde morirás en 1821.'
+      },
+      real: {
+        title: '📜 Lo que ocurrió realmente',
+        text: 'Napoleón invadió Rusia en 1812, sufrió una derrota catastrófica, fue derrotado en Waterloo en 1815 y murió exiliado en Santa Elena en 1821. Pero dejó el Código Civil francés, el sistema educativo moderno y la idea de que el mérito —no el nacimiento— debería determinar el destino de una persona.'
+      },
+      learnt: [
+        'La Revolución Francesa (1789) destruyó el Antiguo Régimen y abrió el camino a nuevos líderes.',
+        'Napoleón reformó el derecho europeo: su Código Civil aún influye en muchos países.',
+        'La campaña de Rusia de 1812 fue un desastre que costó más de 400.000 vidas francesas.',
+        'El exilio en Santa Elena fue la última etapa de Napoleón, quien murió allí en 1821.'
+      ]
+    }
+  },
+  {
+    id: 'antonieta',
+    name: 'María Antonieta',
+    era: 'Austria / Francia, 1755–1793',
+    difficulty: 'medio',
+    diffLabel: 'Medio',
+    avatar: '👸',
+    hook: '"Tenías 14 años cuando te convirtieron en reina de Francia. Nadie te preguntó."',
+    story: [
+      {
+        act: 'Acto I — Origen',
+        text: `<p>Viena, 1769. Tienes catorce años. Tu madre es la emperatriz María Teresa de Austria: la mujer más poderosa de Europa. Y acaba de decidir tu futuro.</p><p>Te casarás con el Delfín de Francia, el futuro Luis XVI. Nunca le has visto. No importa. Eres una pieza en el tablero de la política europea.</p><p>En <span class="glos-link" onclick="openGlos('Versalles')">Versalles</span>, la <span class="glos-link" onclick="openGlos('Corte')">corte</span> más lujosa del mundo te observa como un animal en el zoo. Cada movimiento tuyo será juzgado.</p>`,
+        dato: null
+      },
+      {
+        act: 'Acto II — La Reina',
+        text: `<p>1774. Tu marido se convierte en Luis XVI. Eres Reina de Francia a los 18 años.</p><p>Pero Francia está hambrienta. El tesoro real está vacío. El pueblo habla de ti como "la austríaca" — una extranjera que gasta fortunas en vestidos y fiestas.</p><p>Tu madre te escribe cartas preocupadas: "Modera tus gastos. Cuida tu imagen." Pero <span class="glos-link" onclick="openGlos('Versalles')">Versalles</span> funciona así: si no gastas, no existes.</p>`,
+        decision: {
+          prompt: '👑 ¿Cómo manejas tu imagen pública?',
+          choices: [
+            { label: 'A — Seguir con el lujo', text: 'Las fiestas, la moda, el Petit Trianon. El pueblo no entiende cómo funciona la corte. Es necesario mantener el prestigio.' },
+            { label: 'B — Reducir gastos', text: 'Escuchas a tu madre. Reduces las fiestas y donas parte de tu presupuesto a obras de caridad.' },
+          ],
+          consequences: [
+            {
+              text: 'El pueblo te llama "Madame Déficit". Los pasquines que circulan por París te retratan de manera obscena. Tu impopularidad crece. Cuando llegue la crisis, no tendrás ningún capital de simpatía.',
+              deltas: { poder: +5, popularidad: -25, reputacion: -20, recursos: +10 },
+              dato: 'El llamado "Asunto del Collar" (1785) arruinó definitivamente la reputación de María Antonieta, aunque ella fue inocente. El pueblo ya estaba predispuesto a creer lo peor.'
+            },
+            {
+              text: 'Tu gesto no pasa desapercibido. Algunos periódicos te elogian. Tu popularidad sube levemente. Cuando llegue la Revolución, habrá voces que aboguen por tu supervivencia.',
+              deltas: { poder: -5, popularidad: +20, reputacion: +15, recursos: -10 },
+              dato: 'Varias reinas europeas de la época usaron la caridad pública como herramienta política deliberada para mejorar su imagen ante el pueblo.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto III — La Revolución',
+        text: `<p>1789. El pueblo de París asalta la Bastilla. La <span class="glos-link" onclick="openGlos('Revolución Francesa')">Revolución Francesa</span> ha comenzado.</p><p>La familia real es trasladada de <span class="glos-link" onclick="openGlos('Versalles')">Versalles</span> al Palacio de las Tullerías en París. Estáis presos, aunque nadie lo llame así.</p><p>Tu madre ya murió. Tu familia en Austria no puede ayudarte rápido. Pero hay una opción: huir. El conde de Fersen —tu amigo más fiel— ha preparado los carruajes.</p>`,
+        decision: {
+          prompt: '🏃 ¿Intentas escapar de Francia?',
+          choices: [
+            { label: 'A — Huir a Austria (Fuga de Varennes)', text: 'Por la noche, disfrazados, intentáis cruzar la frontera hacia Austria.' },
+            { label: 'B — Quedarte y negociar', text: 'Confías en que la Asamblea Nacional os respetará si cooperáis. La huida sería admitir que sois traidores.' },
+          ],
+          consequences: [
+            {
+              text: 'Os reconocen en Varennes, a pocas horas de la frontera. Os devuelven a París. La fuga ha sido un desastre: el pueblo ya no confía en vosotros. La monarquía ha muerto políticamente.',
+              deltas: { poder: -30, popularidad: -35, reputacion: -25, recursos: -5 },
+              dato: 'La Fuga de Varennes (junio 1791) fue el momento en que el pueblo francés dejó de creer que el rey y la reina actuaban de buena fe. Aceleró la caída de la monarquía.'
+            },
+            {
+              text: 'Te quedas. La Asamblea os garantiza protección formal. Pero el poder se va erosionando mes a mes. En agosto de 1792 los sans-culottes asaltan las Tullerías de todas formas.',
+              deltas: { poder: -15, popularidad: 0, reputacion: +5, recursos: 0 },
+              dato: 'Varios consejeros recomendaron a Luis XVI y María Antonieta quedarse en París y cooperar con la Asamblea. Creían que la moderación salvaría la monarquía constitucional.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto IV — El Juicio',
+        text: `<p>Octubre de 1793. Luis XVI fue guillotinado en enero. Ahora eres tú la que está ante el Tribunal Revolucionario.</p><p>Te acusan de <span class="glos-link" onclick="openGlos('Traición')">traición</span>, de enviar dinero a Austria, de conspirar contra Francia. Muchas acusaciones son falsas o exageradas. Pero la sala está llena de enemigos.</p><p>El fiscal hace una pregunta espantosa sobre tu hijo. El silencio de la sala espera tu respuesta.</p>`,
+        decision: {
+          prompt: '⚖️ ¿Cómo respondes al fiscal en el juicio?',
+          choices: [
+            { label: 'A — Defenderte con dignidad', text: 'Te levantas y respondes con una frase que quedará grabada en la historia: apelar a la naturaleza misma contra esa acusación.' },
+            { label: 'B — Guardar silencio', text: 'No das a tus enemigos la satisfacción de verte humillada. Tu silencio es tu protesta.' },
+          ],
+          consequences: [
+            {
+              text: 'Tu respuesta hace llorar a las propias mujeres del tribunal. Por un momento, el silencio es absoluto. No cambia el veredicto —ya estaba decidido— pero pasas a la historia como alguien que enfrentó la muerte con dignidad.',
+              deltas: { reputacion: +30, popularidad: +10, poder: 0, recursos: 0 },
+              dato: 'María Antonieta respondió a la acusación infame sobre su hijo: "La naturaleza misma se rebela ante semejante acusación." El silencio que siguió duró varios segundos.'
+            },
+            {
+              text: 'Tu silencio es interpretado como desprecio. No ayuda a tu causa. El veredicto es el mismo: muerte. Pero tu imagen histórica queda más borrosa, menos heroica.',
+              deltas: { reputacion: +5, popularidad: -5, poder: 0, recursos: 0 },
+              dato: 'El juicio a María Antonieta duró apenas dos días (14–15 de octubre de 1793). El veredicto era una formalidad: ya había sido decidido por el Comité de Salvación Pública.'
+            }
+          ]
+        }
+      }
+    ],
+    endings: {
+      good: {
+        title: '👑 Tu final — La Reina Recordada',
+        text: 'Tus decisiones de moderación y dignidad no salvaron tu vida —el veredicto estaba escrito— pero construyeron un legado diferente. La historia te recuerda como una mujer atrapada por su época, no como el símbolo de excesos que la Revolución quería hacer de ti.'
+      },
+      bad: {
+        title: '⚡ Tu final — Madame Déficit',
+        text: 'El lujo, la fuga fallida y los juicios te han convertido en el símbolo perfecto de todo lo que el pueblo odiaba. El 16 de octubre de 1793, a los 37 años, subes al cadalso. La Revolución tiene su chivo expiatorio.'
+      },
+      real: {
+        title: '📜 Lo que ocurrió realmente',
+        text: 'María Antonieta fue guillotinada el 16 de octubre de 1793, con 37 años. La Fuga de Varennes de 1791 selló su destino. Hoy es recordada de maneras muy distintas: como símbolo del absolutismo por unos, como víctima de un sistema que la usó y desechó por otros.'
+      },
+      learnt: [
+        'La vida en Versalles era de lujo extremo mientras el pueblo francés pasaba hambre.',
+        'La Fuga de Varennes (1791) fue el error político fatal de la familia real.',
+        'La Revolución Francesa ejecutó al rey Luis XVI en enero de 1793 y a la reina en octubre.',
+        'El protocolo de Versalles era tan rígido que la reina no podía vestirse sola.'
+      ]
+    }
+  },
+  {
+    id: 'cortes',
+    name: 'Hernán Cortés',
+    era: 'España / México, 1485–1547',
+    difficulty: 'dificil',
+    diffLabel: 'Difícil',
+    avatar: '⚔️',
+    hook: '"Conquistas un imperio. Pero ¿a qué precio… y para quién?"',
+    story: [
+      {
+        act: 'Acto I — Origen',
+        text: `<p>Medellín, Extremadura, 1485. Naces en una familia hidalga menor: tienes apellido noble, pero poco dinero. España habla de un Nuevo Mundo al otro lado del océano.</p><p>En 1504, con 19 años, cruzas el Atlántico. La Española (Santo Domingo) decepciona: hay más colonos que oportunidades. La vida de colono es dura, sucia y peligrosa.</p><p>Pero en Cuba, el gobernador Velázquez te da una misión: liderar una expedición a unas tierras recién descubiertas al oeste. Se llaman México.</p>`,
+        dato: null
+      },
+      {
+        act: 'Acto II — La Ruptura',
+        text: `<p>1519. Estás listo para zarpar hacia México con 500 hombres. Pero Velázquez cambia de opinión: te retira el mando. Dice que te has vuelto demasiado independiente.</p><p>Tus barcos están cargados. Tus hombres listos. La oportunidad de tu vida se va a esfumar si obedeces.</p>`,
+        decision: {
+          prompt: '⚓ ¿Qué haces con la orden de Velázquez?',
+          choices: [
+            { label: 'A — Desobedecer y zarpar', text: 'Zarparás de todas formas. La expedición es tuya. Responderás a la Corona directamente.' },
+            { label: 'B — Obedecer y esperar', text: 'Devuelves el mando. Esperarás otra oportunidad legal.' },
+          ],
+          consequences: [
+            {
+              text: 'Zarpas antes de que puedan detenerte. Es insubordinación. Pero estás en el mar. Lo que encuentres en México lo dedicarás directamente al rey de España. Si tienes éxito, el rey perdonará la desobediencia.',
+              deltas: { poder: +15, reputacion: -10, popularidad: +10, recursos: +5 },
+              dato: 'Hernán Cortés zarpó en febrero de 1519 desoyendo la orden de Velázquez. Su maniobra fue declarar el territorio "en nombre del rey", saltándose al gobernador. Era un movimiento legal muy arriesgado.'
+            },
+            {
+              text: 'Obedeces. Pierdes la expedición. Otro conquistador tomará tu lugar. La historia de México será diferente —y tu nombre, olvidado.',
+              deltas: { poder: -20, reputacion: +10, popularidad: -15, recursos: -10 },
+              dato: 'La audacia fue la marca de los conquistadores. Los que obedecían los protocolos rara vez llegaron a protagonizar las grandes hazañas de la conquista.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto III — Los Aliados',
+        text: `<p>1519. Has llegado a tierras mexicanas. El Imperio Azteca es enorme, rico y poderoso. Tenochtitlán —su capital— es más grande que cualquier ciudad europea.</p><p>Pero descubres algo clave: muchos pueblos odian a los aztecas. Les obligan a pagar tributos y les sacrifican a sus dioses. Los <strong>tlaxcaltecas</strong> son sus enemigos mortales.</p>`,
+        decision: {
+          prompt: '🤝 ¿Cómo avanzas hacia Tenochtitlán?',
+          choices: [
+            { label: 'A — Aliarte con los tlaxcaltecas', text: 'Propones una alianza: vosotros os ayudáis mutuamente contra los aztecas.' },
+            { label: 'B — Negociar directamente con Moctezuma', text: 'Mandas emisarios al emperador azteca. Quizás la diplomacia evite la guerra.' },
+          ],
+          consequences: [
+            {
+              text: 'La alianza con los tlaxcaltecas te da 10.000 guerreros. Sin ellos, 500 españoles contra cientos de miles de aztecas no habrían tenido ninguna oportunidad. Avanzas hacia Tenochtitlán con ejército.',
+              deltas: { poder: +25, popularidad: +5, reputacion: +10, recursos: +10 },
+              dato: 'La conquista de México fue posible gracias a las alianzas con pueblos sometidos por los aztecas. Sin los 10.000 guerreros tlaxcaltecas, los 500 españoles de Cortés habrían sido aniquilados.'
+            },
+            {
+              text: 'Moctezuma te recibe con regalos. Pero su estrategia es ganar tiempo. Cuando entras en Tenochtitlán casi solo, quedas atrapado. Sin aliados, tu posición es muy débil.',
+              deltas: { poder: -10, popularidad: +10, reputacion: +5, recursos: +15 },
+              dato: 'Moctezuma II recibió a Cortés en noviembre de 1519. Las fuentes aztecas e españolas difieren enormemente sobre qué ocurrió en ese encuentro y qué creyó Moctezuma que era Cortés.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto IV — La Noche Triste',
+        text: `<p>Noche del 30 de junio de 1520. Los aztecas se han rebelado. Moctezuma ha muerto. Estáis atrapados en Tenochtitlán con oro robado y miles de guerreros aztecas cortándoos el paso.</p><p>Hay que escapar. Pero el oro es tan pesado que ralentiza la huida. Tus hombres no quieren abandonarlo.</p>`,
+        decision: {
+          prompt: '🌙 La Noche Triste — ¿Qué ordenas?',
+          choices: [
+            { label: 'A — Abandonar el oro y huir rápido', text: 'El oro se puede recuperar. Las vidas, no. Ordenas huir ligeros.' },
+            { label: 'B — Llevaros el oro', text: 'Sin recursos, la expedición muere. Os arriesgáis a cargar el oro.' },
+          ],
+          consequences: [
+            {
+              text: 'Huís ligeros y la mayoría sobrevive. Pierdes el oro pero conservas el ejército. Desde Tlaxcala, reorganizas y vuelves. En 1521, Tenochtitlán cae.',
+              deltas: { poder: +10, popularidad: +15, reputacion: +15, recursos: -20 },
+              dato: 'En la Noche Triste, Hernán Cortés perdió a más de 800 soldados españoles y miles de aliados tlaxcaltecas. Fue su mayor derrota. Según las crónicas, lloró bajo un árbol esa noche.'
+            },
+            {
+              text: 'El peso del oro ralentiza la huida. Cientos de soldados mueren ahogados en los canales de la ciudad bajo el peso del oro que no sueltan. La pérdida es enorme.',
+              deltas: { poder: -15, popularidad: -10, reputacion: -10, recursos: 0 },
+              dato: 'Muchos soldados españoles murieron en la Noche Triste literalmente ahogados por el peso del oro que llevaban encima. La codicia les costó la vida.'
+            }
+          ]
+        }
+      }
+    ],
+    endings: {
+      good: {
+        title: '🏆 Tu final — El Conquistador',
+        text: 'Tus alianzas y decisiones estratégicas te permiten tomar Tenochtitlán en 1521. La Nueva España nace. El rey Carlos I te nombra Gobernador. Tu nombre quedará grabado en la historia, aunque la posteridad lo juzgará de maneras muy distintas.'
+      },
+      bad: {
+        title: '⚡ Tu final — Olvidado por la Corona',
+        text: 'Tus errores estratégicos han debilitado demasiado tu expedición. Regresas a España con poco que mostrar. Mueres en 1547 en Castilleja de la Cuesta, reclamando en vano reconocimiento a una Corona que ya te ha olvidado.'
+      },
+      real: {
+        title: '📜 Lo que ocurrió realmente',
+        text: 'Cortés tomó Tenochtitlán en agosto de 1521, destruyendo el Imperio Azteca. La conquista costó millones de vidas, principalmente por las enfermedades europeas como la viruela. Murió en España en 1547, apartado del poder que él mismo había creado.'
+      },
+      learnt: [
+        'La conquista de México fue posible gracias a alianzas con pueblos que odiaban a los aztecas.',
+        'La viruela mató a más indígenas que todas las batallas juntas.',
+        'El "quinto real" era el 20% de todo el oro que los conquistadores debían al rey de España.',
+        'La Noche Triste (1520) fue la mayor derrota de Cortés: perdió 800 soldados en una noche.'
+      ]
+    }
+  },
+  {
+    id: 'catalina',
+    name: 'Catalina la Grande',
+    era: 'Rusia, 1729–1796',
+    difficulty: 'medio',
+    diffLabel: 'Medio',
+    avatar: '🦅',
+    hook: '"Llegaste como princesa alemana a una corte que te odiaba. Te fuiste como emperatriz de Rusia."',
+    story: [
+      {
+        act: 'Acto I — La Extranjera',
+        text: `<p>Stettin, Prusia, 1745. Tienes quince años y tu madre acaba de decirte que te vas a Rusia. El zar te ha elegido como esposa de su hijo, el futuro Pedro III.</p><p>No hablas ruso. No conoces la <span class="glos-link" onclick="openGlos('Corte')">corte</span>. Eres luterana en un país ortodoxo. Te llaman "la alemana". Para ellos, eres una pieza de ajedrez importada.</p><p>Pero tú tienes un plan. Leerás. Aprenderás. Te convertirás en más rusa que los propios rusos.</p>`,
+        dato: null
+      },
+      {
+        act: 'Acto II — La Adaptación',
+        text: `<p>1750. Llevas cinco años en la corte rusa. Hablas ruso con fluidez. Te has convertido al ortodoxismo. Has leído a <span class="glos-link" onclick="openGlos('Ilustración')">Voltaire, Montesquieu, Diderot</span>.</p><p>Pero tu marido Pedro es un desastre. No te respeta. Admira a Prusia —el enemigo de Rusia— y trata a los soldados rusos con desprecio. La corte le odia.</p>`,
+        decision: {
+          prompt: '🎭 ¿Cómo te posicionas en la corte?',
+          choices: [
+            { label: 'A — Cultivar alianzas con los militares', text: 'Pasas tiempo con los generales y oficiales del ejército. Los escuchas. Los respetas.' },
+            { label: 'B — Mantener un perfil bajo', text: 'Evitas la política. Cuidas a tu hijo Pablo. Esperas que la situación mejore sola.' },
+          ],
+          consequences: [
+            {
+              text: 'Los oficiales del Regimiento Izmailovski te adoran. Cuando llegue el momento, estarán listos para apoyarte. Has sembrado lealtades que darán fruto.',
+              deltas: { poder: +20, popularidad: +15, reputacion: +10, recursos: +5 },
+              dato: 'Catalina cultivó deliberadamente las lealtades del ejército durante años antes de actuar. Cuando llegó el golpe de 1762, los regimientos de la Guardia la aclamaron como emperatriz en menos de 24 horas.'
+            },
+            {
+              text: 'Tu perfil bajo te protege de intrigas, pero pierdes tiempo. Cuando la crisis llegue, no tendrás a nadie en quien confiar plenamente.',
+              deltas: { poder: 0, popularidad: +5, reputacion: +5, recursos: 0 },
+              dato: 'La corte rusa del S.XVIII era uno de los ambientes más peligrosos de Europa. Varias emperatrices y pretendientes fueron asesinados o exiliados en golpes de palacio.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto III — El Golpe',
+        text: `<p>1762. Pedro III lleva seis meses como zar y ya ha alienado a casi todos. Ha firmado una paz humillante con Prusia. Quiere enviar al ejército ruso a luchar por intereses alemanes.</p><p>Los oficiales te buscan. Están listos. Solo necesitan que tú des la orden.</p>`,
+        decision: {
+          prompt: '⚡ ¿Apoyarás el golpe de estado?',
+          choices: [
+            { label: 'A — Liderar el golpe', text: 'Montas a caballo con uniforme de oficial de la Guardia. Te pones al frente del ejército.' },
+            { label: 'B — Apoyar desde las sombras', text: 'El golpe se hace en tu nombre, pero tú no apareces personalmente.' },
+          ],
+          consequences: [
+            {
+              text: 'La imagen de ti a caballo, en uniforme, al frente de los soldados, se convierte en un símbolo. En 24 horas, el ejército entero te ha jurado lealtad. Pedro abdica. Eres la emperatriz de todas las Rusias.',
+              deltas: { poder: +35, popularidad: +25, reputacion: +20, recursos: +10 },
+              dato: 'El 9 de julio de 1762, Catalina se puso al frente de 14.000 soldados montada a caballo. Pedro III abdicó ese mismo día sin resistencia. Días después apareció muerto en circunstancias misteriosas.'
+            },
+            {
+              text: 'El golpe funciona, pero tu figura queda más en la sombra. Los generales que lo ejecutaron reclaman más poder. Tendrás que negociar constantemente con ellos.',
+              deltas: { poder: +20, popularidad: +10, reputacion: +10, recursos: +5 },
+              dato: 'Los golpes de palacio en la Rusia del S.XVIII eran frecuentes. El éxito dependía casi siempre del apoyo de los regimientos de la Guardia Imperial.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto IV — El Gobierno',
+        text: `<p>1765. Llevas tres años gobernando Rusia. El país es enorme, atrasado, y la mayoría de su población son <span class="glos-link" onclick="openGlos('Siervo')">siervos</span> que viven prácticamente como esclavos.</p><p>Tú has leído la <span class="glos-link" onclick="openGlos('Ilustración')">Ilustración</span>. Sabes que esto es injusto. Pero también sabes que la <span class="glos-link" onclick="openGlos('Nobleza')">nobleza</span> rusa sostiene tu poder. Si liberas a los siervos, los nobles se rebelarán.</p>`,
+        decision: {
+          prompt: '📜 ¿Cómo gobernarás Rusia?',
+          choices: [
+            { label: 'A — Reformas ilustradas moderadas', text: 'Creas nuevas instituciones educativas, reformas judiciales y limitas algunos abusos. Sin tocar la servidumbre.' },
+            { label: 'B — Mano de hierro sin reformas', text: 'Rusia necesita orden antes que libertad. Gobernarás con firmeza absoluta.' },
+          ],
+          consequences: [
+            {
+              text: 'Tus reformas modernizan Rusia sin desestabilizarla. Fundas universidades, reformas la ley, correspondes con Voltaire. Europa te llama "la emperatriz filósofa". Rusia se expande.',
+              deltas: { poder: +10, popularidad: +20, reputacion: +25, recursos: +10 },
+              dato: 'Catalina fundó la Academia de las Artes, la primera universidad para mujeres de Europa y el Museo Hermitage. Correspondió durante años con Voltaire, Diderot y D\'Alembert.'
+            },
+            {
+              text: 'El orden que impones es efectivo pero brutal. En 1773 estalla la rebelión de Pugachev: cientos de miles de siervos se levantan. La sofocarás, pero a un coste enorme.',
+              deltas: { poder: +15, popularidad: -20, reputacion: -10, recursos: -15 },
+              dato: 'La rebelión de Pugachev (1773–1775) fue la mayor revuelta campesina de la historia rusa hasta 1917. Catalina la aplastó y ejecutó a Pugachev, pero nunca tocó la servidumbre.'
+            }
+          ]
+        }
+      }
+    ],
+    endings: {
+      good: {
+        title: '🏆 Tu final — La Grande',
+        text: 'Gobernaste Rusia durante 34 años. Expandiste el territorio, modernizaste las instituciones y pusiste a Rusia en el mapa de la Europa ilustrada. La historia te llamará Catalina la Grande.'
+      },
+      bad: {
+        title: '⚡ Tu final — El Poder sin Legado',
+        text: 'Tu gobierno fue eficaz militarmente pero dejó a Rusia sin las reformas que necesitaba. Las tensiones sociales quedan sin resolver. Tu legado es el de una gobernante poderosa pero que no transformó lo que necesitaba transformación.'
+      },
+      real: {
+        title: '📜 Lo que ocurrió realmente',
+        text: 'Catalina gobernó Rusia de 1762 a 1796, 34 años. Expandió el territorio ruso hasta Crimea. Fundó el Hermitage y numerosas instituciones educativas. Nunca abolió la servidumbre, la gran contradicción de su gobierno "ilustrado". Murió en 1796 de un derrame cerebral.'
+      },
+      learnt: [
+        'La Ilustración fue un movimiento intelectual que Catalina usó para modernizar Rusia.',
+        'Los siervos rusos eran campesinos prácticamente esclavos que pertenecían a las tierras nobles.',
+        'Catalina fue la primera mujer en fundar una universidad femenina en Europa.',
+        'El Museo Hermitage de San Petersburgo fue fundado por Catalina la Grande en 1764.'
+      ]
+    }
+  },
+  {
+    id: 'galileo',
+    name: 'Galileo Galilei',
+    era: 'Italia, 1564–1642',
+    difficulty: 'facil',
+    diffLabel: 'Fácil',
+    avatar: '🔭',
+    hook: '"Sabes que la Tierra se mueve. La Iglesia dice que te equivocas. ¿Qué harás?"',
+    story: [
+      {
+        act: 'Acto I — El Científico',
+        text: `<p>Pisa, 1592. Tienes 28 años y una mente que no para. La medicina que estudiaste no te interesa. Lo tuyo son las matemáticas, el movimiento de los planetas, las leyes que gobiernan el universo.</p><p>Has mejorado el <span class="glos-link" onclick="openGlos('Telescopio')">telescopio</span> y has visto cosas que nadie ha visto: lunas orbitando Júpiter. Eso significa algo enorme: no todo gira alrededor de la Tierra.</p><p>Copérnico tenía razón. La Tierra gira alrededor del Sol. El <span class="glos-link" onclick="openGlos('Heliocentrismo')">heliocentrismo</span> es verdad.</p>`,
+        dato: null
+      },
+      {
+        act: 'Acto II — La Decisión',
+        text: `<p>1610. Tienes pruebas. Tus observaciones son irrefutables para cualquier científico honesto. Pero la Iglesia enseña que la Tierra es el centro del universo. Eso está en la Biblia —según ellos.</p><p>Publicar esto es arriesgado. La <span class="glos-link" onclick="openGlos('Inquisición')">Inquisición</span> juzga la <span class="glos-link" onclick="openGlos('Herejía')">herejía</span>. Pero el silencio sería traicionar la verdad.</p>`,
+        decision: {
+          prompt: '📡 ¿Publicas tus descubrimientos?',
+          choices: [
+            { label: 'A — Publicar abiertamente', text: 'Publicas el "Sidereus Nuncius" para todo el mundo. La verdad debe ser libre.' },
+            { label: 'B — Compartir solo con científicos de confianza', text: 'Distribuyes tus notas en círculos privados. Más seguro, menos impacto.' },
+          ],
+          consequences: [
+            {
+              text: 'El "Sidereus Nuncius" (El Mensajero Sidéreo) causa sensación en toda Europa. Otros científicos confirman tus observaciones. Pero la Iglesia toma nota de tu nombre.',
+              deltas: { reputacion: +30, poder: -5, popularidad: +20, recursos: +10 },
+              dato: 'El Sidereus Nuncius (1610) se agotó en días. Galileo se convirtió de golpe en el científico más famoso de Europa. También en el más vigilado por la Inquisición.'
+            },
+            {
+              text: 'Tus ideas circulan en secreto entre científicos. Estás más seguro, pero el impacto es mínimo. La Iglesia no cambia. La ciencia avanza más lentamente.',
+              deltas: { reputacion: +10, poder: +5, popularidad: -5, recursos: 0 },
+              dato: 'Muchos científicos de la época compartían ideas solo en cartas privadas para evitar problemas con la Inquisición. Era una práctica habitual pero que ralentizaba enormemente el avance del conocimiento.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto III — El Mecenas',
+        text: `<p>1616. La Iglesia te ha advertido: no puedes enseñar el <span class="glos-link" onclick="openGlos('Heliocentrismo')">heliocentrismo</span> como verdad. Solo como hipótesis matemática.</p><p>Necesitas protección. Un noble poderoso que frene a la <span class="glos-link" onclick="openGlos('Inquisición')">Inquisición</span>. El <span class="glos-link" onclick="openGlos('Mecenazgo')">mecenazgo</span> es como funciona la ciencia en tu época.</p>`,
+        decision: {
+          prompt: '🎩 ¿A quién dedicas tu trabajo?',
+          choices: [
+            { label: 'A — Al Gran Duque de Toscana', text: 'Le dedicas las lunas de Júpiter. Las llamarás "Lunas Mediceas" en su honor.' },
+            { label: 'B — Mantener tu independencia', text: 'No quieres deber favores a ningún noble. Tu ciencia es tuya.' },
+          ],
+          consequences: [
+            {
+              text: 'El Gran Duque queda encantado y se convierte en tu protector. Durante años, su influencia te mantiene a salvo. Puedes trabajar con relativa libertad en Florencia.',
+              deltas: { poder: +15, reputacion: +5, recursos: +20, popularidad: +10 },
+              dato: 'Galileo nombró las lunas de Júpiter "Mediceas" en honor a la familia Medici. El gesto le valió un puesto como matemático y filósofo del Gran Duque de Toscana, con salario fijo y sin obligaciones de enseñar.'
+            },
+            {
+              text: 'Tu independencia intelectual es admirable. Pero sin un protector poderoso, eres vulnerable. Cuando la Inquisición actúe, no habrá nadie entre tú y el tribunal.',
+              deltas: { reputacion: +15, poder: -10, recursos: -5, popularidad: +5 },
+              dato: 'Sin el mecenazgo de los Medici, Galileo habría dependido de la Universidad de Padua, que estaba bajo control de Venecia —menos influencia eclesiástica, pero también menos recursos y fama.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto IV — La Inquisición',
+        text: `<p>1633. Roma. Tienes 69 años y artritis. El "Diálogo sobre los dos grandes sistemas del mundo" que publicaste ha enfurecido al Papa Urbano VIII. Cree que el personaje torpe del libro le representa a él.</p><p>La <span class="glos-link" onclick="openGlos('Inquisición')">Inquisición</span> te tiene delante. La acusación: <span class="glos-link" onclick="openGlos('Herejía')">herejía</span>. La pena posible: la hoguera o la cárcel perpetua.</p><p>El inquisidor te ofrece una salida: retráctate públicamente y vivirás.</p>`,
+        decision: {
+          prompt: '🔥 Ante la Inquisición — ¿Qué decides?',
+          choices: [
+            { label: 'A — Retractarte para sobrevivir', text: 'Dices públicamente que te equivocabas. La Tierra no se mueve. Mientes para vivir.' },
+            { label: 'B — Defender tu verdad', text: 'No puedes negar lo que has visto con tus propios ojos. La Tierra se mueve.' },
+          ],
+          consequences: [
+            {
+              text: 'Te retractas. La Inquisición te condena a arresto domiciliario —no a muerte. Pasarás los últimos 9 años de tu vida en tu villa de Arcetri. Allí, en secreto, seguirás escribiendo. Tu obra "Discursos" se publicará en Holanda.',
+              deltas: { poder: -5, reputacion: -10, popularidad: +5, recursos: +5 },
+              dato: 'Galileo estuvo bajo arresto domiciliario los últimos 9 años de su vida, pero siguió escribiendo. Su obra Discursos fue publicada en secreto en Holanda en 1638, cuatro años antes de su muerte.'
+            },
+            {
+              text: 'Defiendes tu verdad. El tribunal te condena a prisión perpetua. Mueres en la cárcel antes de poder completar tus últimas obras. La ciencia pierde años de avance.',
+              deltas: { poder: -20, reputacion: +25, popularidad: -10, recursos: -20 },
+              dato: 'Giordano Bruno, contemporáneo de Galileo, sí defendió sus ideas heréticas hasta el final. Fue quemado vivo en Roma en 1600. Galileo sabía muy bien lo que arriesgaba.'
+            }
+          ]
+        }
+      }
+    ],
+    endings: {
+      good: {
+        title: '🏆 Tu final — La Verdad Sobrevive',
+        text: 'Tu retractación fue táctica, no sincera. En arresto domiciliario, escribiste tus obras más importantes. Cuando muriste en 1642, Newton tenía 1 año. La ciencia moderna que fundaste cambió el mundo para siempre.'
+      },
+      bad: {
+        title: '⚡ Tu final — El Mártir de la Ciencia',
+        text: 'Tu valentía tiene un coste enorme. La prisión destroza tu salud. Mueres sin haber podido terminar tus últimas obras. Pero tu nombre se convierte en símbolo de la lucha de la razón contra la superstición.'
+      },
+      real: {
+        title: '📜 Lo que ocurrió realmente',
+        text: 'Galileo se retractó ante la Inquisición en 1633 y fue condenado a arresto domiciliario. Según la leyenda, al salir murmuró: "Eppur si muove" (Y sin embargo, se mueve). Murió en Arcetri en 1642. La Iglesia Católica rehabilitó oficialmente a Galileo en 1992.'
+      },
+      learnt: [
+        'Galileo fue el primero en usar el telescopio sistemáticamente para estudiar el cielo.',
+        'La Inquisición podía condenar a muerte a quien enseñara ideas contrarias a la doctrina.',
+        'El mecenazgo de los nobles financiaba la ciencia: sin protectores, los científicos no podían trabajar.',
+        'La Iglesia Católica rehabilitó a Galileo oficialmente en 1992, 350 años después de su muerte.'
+      ]
+    }
+  },
+  {
+    id: 'juana',
+    name: 'Juana de Arco',
+    era: 'Francia, 1412–1431',
+    difficulty: 'facil',
+    diffLabel: 'Fácil',
+    avatar: '🗡️',
+    hook: '"Eres una campesina de 17 años. Las voces te dicen que salves Francia. ¿Las escuchas?"',
+    story: [
+      {
+        act: 'Acto I — Las Voces',
+        text: `<p>Domrémy, Francia, 1424. Tienes doce años. Tu aldea ha sido arrasada dos veces por los ingleses. La Guerra de los Cien Años lleva décadas destruyendo Francia. Los ingleses controlan el norte del país.</p><p>Desde los trece años, escuchas voces. Dices que son San Miguel, Santa Catalina y Santa Margarita. Te dicen que tienes que salvar Francia. Que tienes que llevar al rey Carlos VII a Reims para ser coronado.</p><p>Eres una campesina. No sabes leer ni escribir. Nunca has salido de tu aldea.</p>`,
+        dato: null
+      },
+      {
+        act: 'Acto II — La Misión',
+        text: `<p>1429. Tienes diecisiete años. Las voces son más insistentes que nunca. Orleáns, la ciudad clave del sur de Francia, está sitiada por los ingleses. Si cae, todo habrá terminado.</p><p>Necesitas ver al rey Carlos VII. Pero para llegar a él, debes atravesar territorio enemigo con un grupo de soldados. Y nadie cree que una campesina pueda salvar a Francia.</p>`,
+        decision: {
+          prompt: '⚔️ ¿Cómo convences a los que mandan?',
+          choices: [
+            { label: 'A — Ir directamente a ver al rey', text: 'Pides una escolta, cruzas el territorio hostil y te presentas ante Carlos VII sin ejército ni credenciales.' },
+            { label: 'B — Esperar apoyo militar primero', text: 'Intentas conseguir soldados locales que te respalden antes de ir a ver al rey.' },
+          ],
+          consequences: [
+            {
+              text: 'Cruzas Francia disfrazada de hombre, de noche, durante 11 días. Llegas a Chinon. El rey te somete a una prueba: se esconde entre sus cortesanos. Le reconoces inmediatamente entre todos ellos. Carlos VII te da el ejército.',
+              deltas: { poder: +20, popularidad: +25, reputacion: +20, recursos: +10 },
+              dato: 'Juana de Arco viajó de Vaucouleurs a Chinon (550 km) en 11 días, cruzando territorio mayoritariamente inglés y borgoñón, disfrazada de hombre. Llegó en febrero de 1429.'
+            },
+            {
+              text: 'Consigues un pequeño grupo de hombres locales, pero el tiempo juega en contra. Orleáns sigue sitiada. Cuando finalmente llegas al rey, la situación ha empeorado.',
+              deltas: { poder: +5, popularidad: +10, reputacion: +5, recursos: 0 },
+              dato: 'La velocidad fue clave en la estrategia de Juana. En las guerras medievales, los sitios se ganaban o perdían en semanas. Cada día de retraso costaba vidas.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto III — Orleáns',
+        text: `<p>Abril de 1429. Llegas a Orleáns al frente de un ejército de socorro con víveres y soldados. Los ingleses llevan meses sitiando la ciudad. Los habitantes están agotados y hambrientos.</p><p>Eres una chica de diecisiete años con armadura blanca. Los soldados franceses, que llevan años perdiendo, te miran como si fueras un milagro.</p>`,
+        decision: {
+          prompt: '🏰 La batalla de Orleáns — ¿Qué estrategia sigues?',
+          choices: [
+            { label: 'A — Ataque directo y rápido', text: 'El factor sorpresa y el ánimo son tu ventaja. Atacas las fortalezas inglesas en días consecutivos.' },
+            { label: 'B — Esperar y planificar con los capitanes', text: 'Los capitanes tienen más experiencia. Deberías planificar cuidadosamente antes de atacar.' },
+          ],
+          consequences: [
+            {
+              text: 'En nueve días, las fortalezas inglesas que rodeaban Orleáns caen una a una. Los ingleses huyen. Orleáns está libre. Toda Francia habla de "la Doncella". El ejército francés tiene por primera vez en años lo que más necesitaba: esperanza.',
+              deltas: { poder: +30, popularidad: +35, reputacion: +30, recursos: +5 },
+              dato: 'El sitio de Orleáns, que durava desde octubre de 1428, fue levantado en apenas 9 días tras la llegada de Juana (4–8 mayo 1429). Fue el punto de inflexión de la Guerra de los Cien Años.'
+            },
+            {
+              text: 'Los capitanes proponen esperar refuerzos. La espera da tiempo a los ingleses para reorganizarse. La batalla se alarga semanas. La victoria llega, pero mucho más costosa.',
+              deltas: { poder: +10, popularidad: +15, reputacion: +10, recursos: -10 },
+              dato: 'Los capitanes franceses tenían poca fe en la estrategia de Juana. Varios la ignoraron en múltiples ocasiones. Las victorias de Juana vinieron a menudo de actuar contra los consejos de sus propios generales.'
+            }
+          ]
+        }
+      },
+      {
+        act: 'Acto IV — El Juicio',
+        text: `<p>Mayo de 1430. En una batalla cerca de Compiègne, te capturan los borgoñeses —aliados de los ingleses. El rey Carlos VII, al que tú coronaste en Reims, no paga tu rescate.</p><p>Te venden a los ingleses por 10.000 libras. Te juzgarán por <span class="glos-link" onclick="openGlos('Herejía')">herejía</span>. La acusación principal: vestir ropa de hombre. Tienes diecinueve años.</p>`,
+        decision: {
+          prompt: '⚖️ Ante el tribunal — ¿Renuncias a las voces?',
+          choices: [
+            { label: 'A — Retractarte para vivir', text: 'Firmas un documento renunciando a las voces y a vestir ropa de hombre. Te librarás de la hoguera.' },
+            { label: 'B — Defender tus voces hasta el final', text: 'No puedes negar lo que escuchaste. Son reales para ti. Mueres con tu verdad.' },
+          ],
+          consequences: [
+            {
+              text: 'Te retractas. Te salvas de la hoguera… por días. Luego vuelves a ponerte ropa de hombre —dicen que para protegerte en prisión. El tribunal te condena como reincidente. La hoguera es inevitable de todas formas.',
+              deltas: { poder: -5, popularidad: -10, reputacion: -5, recursos: 0 },
+              dato: 'Juana firmó una retractación el 24 de mayo de 1431. Días después fue encontrada con ropa de hombre de nuevo en su celda. Fue condenada como reincidente y quemada el 30 de mayo de 1431.'
+            },
+            {
+              text: 'Defiendes tus voces. El tribunal tiene lo que quería. El 30 de mayo de 1431, en la plaza del mercado de Ruán, a los diecinueve años, mueres en la hoguera. Pero tu nombre vivirá siglos.',
+              deltas: { poder: -20, reputacion: +35, popularidad: +20, recursos: -20 },
+              dato: 'El verdugo que ejecutó a Juana de Arco dijo después que temía "haber quemado a una santa". En 1456, el juicio fue anulado oficialmente. En 1920, Juana de Arco fue canonizada.'
+            }
+          ]
+        }
+      }
+    ],
+    endings: {
+      good: {
+        title: '🏆 Tu final — La Doncella Inmortal',
+        text: 'Salvaste Orleáns. Coronaste al rey en Reims. Cambiaste el curso de la Guerra de los Cien Años. Tu muerte a los diecinueve años no fue el final: fue el comienzo de una leyenda que dura siglos.'
+      },
+      bad: {
+        title: '⚡ Tu final — Traicionada',
+        text: 'El rey que coronaste no pagó tu rescate. El juicio fue una farsa política. Pero tu sacrificio no fue en vano: 25 años después de tu muerte, Francia expulsó a los ingleses. El rey te rehabilitó cuando ya no podías escucharlo.'
+      },
+      real: {
+        title: '📜 Lo que ocurrió realmente',
+        text: 'Juana de Arco fue quemada viva el 30 de mayo de 1431, con 19 años. En 1456, el rey Carlos VII anuló su condena —para limpiar su propia reputación, más que por justicia. En 1920 fue canonizada por la Iglesia Católica. Hoy es símbolo nacional de Francia.'
+      },
+      learnt: [
+        'La Guerra de los Cien Años (1337–1453) fue el conflicto más largo de la Edad Media entre Francia e Inglaterra.',
+        'En la época, una mujer que vistiera ropa de hombre podía ser acusada de herejía.',
+        'El sitio de Orleáns fue levantado en 9 días tras la llegada de Juana de Arco en 1429.',
+        'Juana fue canonizada en 1920, casi 500 años después de su muerte.'
+      ]
+    }
+  }
+];
+
+// ============================================================
+//  STATE
+// ============================================================
+let state = {
+  character: null,
+  storyStep: 0,
+  subStep: 'narrative', // 'narrative' | 'decision' | 'consequence'
+  indicators: { poder: 50, recursos: 50, popularidad: 50, reputacion: 50 },
+  choicesMade: [],
+  lastConsequence: null,
+  prevScreen: 'screen-inicio'
+};
+
+// ============================================================
+//  UTILS
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function showSeleccion() {
+  renderChars('todos');
+  showScreen('screen-seleccion');
+}
+function showGlosario() {
+  state.prevScreen = document.querySelector('.screen.active').id;
+  renderGlosario();
+  showScreen('screen-glosario');
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+function openGlos(term) {
+  document.getElementById('glosModalTitle').textContent = term;
+  document.getElementById('glosModalDef').textContent = GLOSARIO[term] || 'Definición no encontrada.';
+  document.getElementById('glosModal').classList.add('open');
+}
+function closeGlos() {
+  document.getElementById('glosModal').classList.remove('open');
+}
+
+// ============================================================
+//  RENDER CHARS
+// ============================================================
+function renderChars(filter) {
+  const grid = document.getElementById('charGrid');
+  const chars = filter === 'todos' ? CHARACTERS : CHARACTERS.filter(c => c.difficulty === filter);
+  grid.innerHTML = chars.map(c => `
+    <div class="char-card" onclick="startGame('${c.id}')">
+      <span class="char-avatar">${c.avatar}</span>
+      <div class="char-name">${c.name}</div>
+      <div class="char-era">${c.era}</div>
+      <span class="difficulty-badge diff-${c.difficulty}">${c.diffLabel}</span>
+      <div class="char-hook">${c.hook}</div>
+    </div>
+  `).join('');
+}
+function filterChars(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderChars(filter);
+}
+
+// ============================================================
+//  RENDER GLOSARIO
+// ============================================================
+function renderGlosario() {
+  const grid = document.getElementById('glosGrid');
+  grid.innerHTML = Object.entries(GLOSARIO).sort((a,b) => a[0].localeCompare(b[0])).map(([term, def]) => `
+    <div class="glos-item">
+      <div class="glos-term">${term}</div>
+      <div class="glos-def">${def}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+//  GAME ENGINE
+// ============================================================
+function startGame(charId) {
+  state.character = CHARACTERS.find(c => c.id === charId);
+  state.storyStep = 0;
+  state.subStep = 'narrative';
+  state.indicators = { poder: 50, recursos: 50, popularidad: 50, reputacion: 50 };
+  state.choicesMade = [];
+  showScreen('screen-juego');
+  renderGame();
+}
+
+function renderGame() {
+  const char = state.character;
+  const step = char.story[state.storyStep];
+  const content = document.getElementById('gameContent');
+
+  // Dots
+  const totalDecisions = char.story.filter(s => s.decision).length;
+  const doneDecisions = state.choicesMade.length;
+
+  let html = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <span style="font-size:1.8rem;">${char.avatar}</span>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:0.85rem;font-weight:700;color:var(--gold-dark);">${char.name}</div>
+        <div style="font-size:0.78rem;color:#8B7A55;font-style:italic;">${char.era}</div>
+      </div>
+    </div>
+    ${renderIndicators()}
+    <div class="progress-dots">
+      ${char.story.filter(s=>s.decision).map((_,i) => `<div class="dot ${i < doneDecisions ? 'done' : (i === doneDecisions ? 'current' : '')}"></div>`).join('')}
+    </div>
+    <hr class="divider" style="margin:10px auto 18px;">
+  `;
+
+  if (state.subStep === 'consequence' && state.lastConsequence) {
+    const cons = state.lastConsequence;
+    html += `
+      <div class="act-label">⚡ Consecuencia</div>
+      <div class="consequence-box fade-in">
+        <div class="consequence-text">${cons.text}</div>
+      </div>
+      ${cons.dato ? `
+        <div class="dato-box fade-in">
+          <div class="dato-title">📖 ¿Sabías que...?</div>
+          <div class="dato-text">${cons.dato}</div>
+        </div>
+      ` : ''}
+      <button class="btn btn-primary" onclick="advanceAfterConsequence()">Continuar →</button>
+    `;
+  } else if (state.subStep === 'decision' && step.decision) {
+    html += `
+      <div class="act-label">${step.act}</div>
+      <div class="narrative-text fade-in">${step.text}</div>
+      <div class="decision-prompt fade-in">${step.decision.prompt}</div>
+      ${step.decision.choices.map((c, i) => `
+        <button class="choice-btn fade-in" onclick="makeChoice(${i})">
+          <span class="choice-label">${c.label}</span>
+          ${c.text}
+        </button>
+      `).join('')}
+    `;
+  } else {
+    html += `
+      <div class="act-label">${step.act}</div>
+      <div class="narrative-text fade-in">${step.text}</div>
+      ${step.dato ? `
+        <div class="dato-box fade-in">
+          <div class="dato-title">📖 ¿Sabías que...?</div>
+          <div class="dato-text">${step.dato}</div>
+        </div>
+      ` : ''}
+      <button class="btn btn-primary" onclick="advanceNarrative()">
+        ${step.decision ? 'Llega el momento de elegir →' : 'Continuar →'}
+      </button>
+    `;
+  }
+
+  content.innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+function renderIndicators() {
+  const ind = state.indicators;
+  return `
+    <div class="indicators-bar">
+      <div class="indicators-title">📊 ESTADO DEL PERSONAJE</div>
+      <div class="indicators-grid">
+        <div class="indicator-item">
+          <div style="display:flex;justify-content:space-between;">
+            <span class="indicator-label">🗡️ Poder</span>
+            <span class="indicator-val">${Math.round(ind.poder)}/100</span>
+          </div>
+          <div class="indicator-track"><div class="indicator-fill fill-poder" style="width:${ind.poder}%"></div></div>
+        </div>
+        <div class="indicator-item">
+          <div style="display:flex;justify-content:space-between;">
+            <span class="indicator-label">💰 Recursos</span>
+            <span class="indicator-val">${Math.round(ind.recursos)}/100</span>
+          </div>
+          <div class="indicator-track"><div class="indicator-fill fill-recursos" style="width:${ind.recursos}%"></div></div>
+        </div>
+        <div class="indicator-item">
+          <div style="display:flex;justify-content:space-between;">
+            <span class="indicator-label">❤️ Popularidad</span>
+            <span class="indicator-val">${Math.round(ind.popularidad)}/100</span>
+          </div>
+          <div class="indicator-track"><div class="indicator-fill fill-popularidad" style="width:${ind.popularidad}%"></div></div>
+        </div>
+        <div class="indicator-item">
+          <div style="display:flex;justify-content:space-between;">
+            <span class="indicator-label">🧠 Reputación</span>
+            <span class="indicator-val">${Math.round(ind.reputacion)}/100</span>
+          </div>
+          <div class="indicator-track"><div class="indicator-fill fill-reputacion" style="width:${ind.reputacion}%"></div></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function advanceNarrative() {
+  const step = state.character.story[state.storyStep];
+  if (step.decision) {
+    state.subStep = 'decision';
+  } else {
+    state.storyStep++;
+    state.subStep = 'narrative';
+    if (state.storyStep >= state.character.story.length) {
+      renderEnding();
+      return;
+    }
+  }
+  renderGame();
+}
+
+function makeChoice(idx) {
+  const step = state.character.story[state.storyStep];
+  const cons = step.decision.consequences[idx];
+  state.choicesMade.push(idx);
+  state.lastConsequence = cons;
+
+  // apply deltas
+  const deltas = cons.deltas;
+  let deltaMsg = [];
+  Object.entries(deltas).forEach(([key, val]) => {
+    state.indicators[key] = Math.max(0, Math.min(100, state.indicators[key] + val));
+    if (val !== 0) deltaMsg.push((val > 0 ? '+' : '') + val + ' ' + key);
+  });
+  if (deltaMsg.length) toast(deltaMsg.join(' | '));
+
+  state.subStep = 'consequence';
+  renderGame();
+}
+
+function advanceAfterConsequence() {
+  state.storyStep++;
+  state.subStep = 'narrative';
+  state.lastConsequence = null;
+  if (state.storyStep >= state.character.story.length) {
+    renderEnding();
+    return;
+  }
+  renderGame();
+}
+
+// ============================================================
+//  ENDING
+// ============================================================
+function renderEnding() {
+  const char = state.character;
+  const ind = state.indicators;
+  const score = (ind.poder + ind.recursos + ind.popularidad + ind.reputacion) / 4;
+  const ending = score >= 45 ? char.endings.good : char.endings.bad;
+
+  const content = document.getElementById('gameContent');
+  content.innerHTML = `
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:3rem;">${char.avatar}</div>
+      <h2 class="section-title" style="margin-top:8px;">FIN DE LA PARTIDA</h2>
+      <p class="subtitle">${char.name}</p>
+    </div>
+
+    ${renderIndicators()}
+
+    <hr class="divider">
+
+    <div class="final-box final-yours fade-in">
+      <div class="final-label">⭐ ${ending.title}</div>
+      <div class="final-text">${ending.text}</div>
+    </div>
+
+    <div class="final-box final-real fade-in">
+      <div class="final-label">${char.endings.real.title}</div>
+      <div class="final-text">${char.endings.real.text}</div>
+    </div>
+
+    <div class="final-box fade-in" style="margin-top:14px;">
+      <div class="final-label" style="font-family:'Cinzel',serif;font-size:0.75rem;font-weight:700;letter-spacing:0.12em;color:var(--gold-dark);margin-bottom:8px;">📚 LO QUE APRENDISTE</div>
+      <ul class="learnt-list">
+        ${char.endings.learnt.map(l => `<li>${l}</li>`).join('')}
+      </ul>
+    </div>
+
+    <hr class="divider">
+
+    <button class="btn btn-primary" onclick="startGame('${char.id}')">🔄 Jugar de nuevo</button>
+    <button class="btn btn-secondary" onclick="showSeleccion()">🎭 Elegir otro personaje</button>
+  `;
+  window.scrollTo(0,0);
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+renderChars('todos');
+</script>
+</body>
+</html>
